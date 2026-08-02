@@ -1,0 +1,1029 @@
+-- =================================================================
+-- 👑 ALL MENU BY KRAN (RGB CUSTOMIZABLE VERSION) - Part 1
+-- =================================================================
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local CoreGui = game:GetService("CoreGui")
+
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local Camera = workspace.CurrentCamera
+ParentGui = (CoreGui:FindFirstChild("RobloxGui") and CoreGui) or PlayerGui
+
+-- =================================================================
+-- 🎨 CONFIGURATION & RGB SYSTEM
+-- =================================================================
+local RGB_Config = {
+    Speed = 1,          -- ความเร็วการวนไฟ
+    Size = 4,           -- ขนาดความหนาของเส้นขอบ (Pixels)
+    Mode = "Rainbow",   -- โหมดสี: "Rainbow", "Green", "Cyan", "Fire"
+    WaveIntensity = 0.5 -- ความสว่าง/จางของคลื่น
+}
+
+local function GetCustomSequence(mode, offset)
+    local t = (tick() * RGB_Config.Speed + offset) % 1
+    
+    if mode == "Rainbow" then
+        return ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromHSV((t) % 1, 1, 1)),
+            ColorSequenceKeypoint.new(0.2, Color3.fromHSV((t + 0.2) % 1, 1, 0.4 + math.sin(t * 10) * 0.3)),
+            ColorSequenceKeypoint.new(0.4, Color3.fromHSV((t + 0.4) % 1, 1, 1)),
+            ColorSequenceKeypoint.new(0.6, Color3.fromHSV((t + 0.6) % 1, 1, 0.3)),
+            ColorSequenceKeypoint.new(0.8, Color3.fromHSV((t + 0.8) % 1, 1, 1)),
+            ColorSequenceKeypoint.new(1, Color3.fromHSV((t + 1) % 1, 1, 1))
+        })
+    elseif mode == "Green" then
+        local v1 = 0.3 + 0.7 * math.abs(math.sin(t * 6))
+        local v2 = 0.3 + 0.7 * math.abs(math.cos(t * 6))
+        return ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 100)),
+            ColorSequenceKeypoint.new(0.25, Color3.fromRGB(0, 80 * v1, 30)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(50, 255, 150)),
+            ColorSequenceKeypoint.new(0.75, Color3.fromRGB(0, 90 * v2, 40)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 100))
+        })
+    elseif mode == "Cyan" then
+        local v1 = 0.2 + 0.8 * math.abs(math.sin(t * 5))
+        return ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 230, 255)),
+            ColorSequenceKeypoint.new(0.33, Color3.fromRGB(0, 40 * v1, 120)),
+            ColorSequenceKeypoint.new(0.66, Color3.fromRGB(0, 140, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 230, 255))
+        })
+    elseif mode == "Fire" then
+        return ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 30, 0)),
+            ColorSequenceKeypoint.new(0.3, Color3.fromRGB(80, 10, 0)),
+            ColorSequenceKeypoint.new(0.6, Color3.fromRGB(255, 180, 0)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 30, 0))
+        })
+    end
+end
+
+local AvatarImg = "rbxassetid://0"
+pcall(function()
+    AvatarImg = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+end)
+
+if ParentGui:FindFirstChild("KranLoadingScreen") then ParentGui.KranLoadingScreen:Destroy() end
+
+local SplashGui = Instance.new("ScreenGui")
+SplashGui.Name = "KranLoadingScreen"
+SplashGui.Parent = ParentGui
+SplashGui.ResetOnSpawn = false
+
+local SplashFrame = Instance.new("Frame")
+SplashFrame.Size = UDim2.fromOffset(420, 240)
+SplashFrame.Position = UDim2.new(0.5, -210, 0.5, -120)
+SplashFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 16)
+SplashFrame.BorderSizePixel = 0
+SplashFrame.Parent = SplashGui
+
+local SplashCorner = Instance.new("UICorner")
+SplashCorner.CornerRadius = UDim.new(0, 16)
+SplashCorner.Parent = SplashFrame
+
+local SplashStroke = Instance.new("UIStroke")
+SplashStroke.Thickness = 3
+SplashStroke.Parent = SplashFrame
+
+local ProfileImage = Instance.new("ImageLabel")
+ProfileImage.Size = UDim2.fromOffset(70, 70)
+ProfileImage.Position = UDim2.new(0.5, -35, 0.12, 0)
+ProfileImage.Image = AvatarImg
+ProfileImage.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+ProfileImage.Parent = SplashFrame
+
+local ProfileCorner = Instance.new("UICorner")
+ProfileCorner.CornerRadius = UDim.new(1, 0)
+ProfileCorner.Parent = ProfileImage
+
+local LoadTitle = Instance.new("TextLabel")
+LoadTitle.Size = UDim2.new(1, 0, 0, 30)
+LoadTitle.Position = UDim2.new(0, 0, 0.46, 0)
+LoadTitle.Text = "⚡ ALL MENU BY KRAN ⚡"
+LoadTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+LoadTitle.TextSize = 18
+LoadTitle.Font = Enum.Font.FredokaOne
+LoadTitle.BackgroundTransparency = 1
+LoadTitle.Parent = SplashFrame
+
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Size = UDim2.new(1, 0, 0, 20)
+StatusLabel.Position = UDim2.new(0, 0, 0.60, 0)
+StatusLabel.Text = "🔥 กำลังติดตั้งระบบเอฟเฟกต์ RGB..."
+StatusLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+StatusLabel.TextSize = 12
+StatusLabel.Font = Enum.Font.SourceSansBold
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Parent = SplashFrame
+
+local BarBG = Instance.new("Frame")
+BarBG.Size = UDim2.new(0.8, 0, 0, 10)
+BarBG.Position = UDim2.new(0.1, 0, 0.78, 0)
+BarBG.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+BarBG.BorderSizePixel = 0
+BarBG.Parent = SplashFrame
+
+local BarFill = Instance.new("Frame")
+BarFill.Size = UDim2.new(0, 0, 1, 0)
+BarFill.BackgroundColor3 = Color3.fromRGB(0, 255, 170)
+BarFill.BorderSizePixel = 0
+BarFill.Parent = BarBG
+
+TweenService:Create(BarFill, TweenInfo.new(1.0, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 1, 0)}):Play()
+task.wait(0.5)
+SplashGui:Destroy()
+-- =================================================================
+-- Part 2: ESP & HITBOX SETUP & TOGGLE BUTTON
+-- =================================================================
+local Box_Enabled = false
+local Highlight_Enabled = false
+local Tracers_Enabled = false
+local Hitbox_Enabled = false
+local Hitbox_Size_Value = 15
+local ESP_Objects = {}
+
+if ParentGui:FindFirstChild("KranMenuToggle") then ParentGui.KranMenuToggle:Destroy() end
+
+local ToggleGui = Instance.new("ScreenGui")
+ToggleGui.Name = "KranMenuToggle"
+ToggleGui.Parent = ParentGui
+
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Name = "ToggleBtn"
+ToggleBtn.Parent = ToggleGui
+ToggleBtn.Size = UDim2.fromOffset(50, 50)
+ToggleBtn.Position = UDim2.new(0, 15, 0.4, 0)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+ToggleBtn.Text = "👑"
+ToggleBtn.TextSize = 24
+ToggleBtn.Active = true
+ToggleBtn.Draggable = true
+
+local UICornerToggle = Instance.new("UICorner")
+UICornerToggle.CornerRadius = UDim.new(1, 0)
+UICornerToggle.Parent = ToggleBtn
+
+local UIStrokeToggle = Instance.new("UIStroke")
+UIStrokeToggle.Thickness = 3
+UIStrokeToggle.Parent = ToggleBtn
+
+if ParentGui:FindFirstChild("KranEspMenuFrame") then ParentGui.KranEspMenuFrame:Destroy() end
+
+local EspScreenGui = Instance.new("ScreenGui")
+EspScreenGui.Name = "KranEspMenuFrame"
+EspScreenGui.Parent = ParentGui
+EspScreenGui.Enabled = false
+
+local EspMainFrame = Instance.new("Frame")
+EspMainFrame.Name = "EspMainFrame"
+EspMainFrame.Parent = EspScreenGui
+EspMainFrame.Size = UDim2.fromOffset(250, 330)
+EspMainFrame.Position = UDim2.new(0.02, 0, 0.2, 0)
+EspMainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+EspMainFrame.Active = true
+EspMainFrame.Draggable = true
+
+local EspCorner = Instance.new("UICorner")
+EspCorner.CornerRadius = UDim.new(0, 12)
+EspCorner.Parent = EspMainFrame
+
+local EspUIStroke = Instance.new("UIStroke")
+EspUIStroke.Thickness = 3
+EspUIStroke.Parent = EspMainFrame
+
+local EspTitle = Instance.new("TextLabel")
+EspTitle.Parent = EspMainFrame
+EspTitle.Size = UDim2.new(1, 0, 0, 38)
+EspTitle.Text = "📦 ESP & HITBOX VIP | KRAN"
+EspTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+EspTitle.TextSize = 13
+EspTitle.Font = Enum.Font.FredokaOne
+EspTitle.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 12)
+TitleCorner.Parent = EspTitle
+
+local function CreateEspButton(text, pos, callback)
+    local Btn = Instance.new("TextButton")
+    Btn.Parent = EspMainFrame
+    Btn.Size = UDim2.new(0.9, 0, 0, 34)
+    Btn.Position = pos
+    Btn.BackgroundColor3 = Color3.fromRGB(30, 30, 42)
+    Btn.Text = text
+    Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Btn.TextSize = 12
+    Btn.Font = Enum.Font.SourceSansBold
+    
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 8)
+    BtnCorner.Parent = Btn
+    
+    Btn.MouseButton1Click:Connect(function() callback(Btn) end)
+    return Btn
+end
+
+CreateEspButton("📦 กรอบ 2D Box + หลอดเลือด: OFF 🔴", UDim2.new(0.05, 0, 0.14, 0), function(btn)
+    Box_Enabled = not Box_Enabled
+    btn.Text = Box_Enabled and "📦 กรอบ 2D Box + หลอดเลือด: ON 🟢" or "📦 กรอบ 2D Box + หลอดเลือด: OFF 🔴"
+end)
+
+CreateEspButton("✨ Highlight เรืองแสงสีเหลือง: OFF 🔴", UDim2.new(0.05, 0, 0.27, 0), function(btn)
+    Highlight_Enabled = not Highlight_Enabled
+    btn.Text = Highlight_Enabled and "✨ Highlight เรืองแสงสีเหลือง: ON 🟢" or "✨ Highlight เรืองแสงสีเหลือง: OFF 🔴"
+end)
+
+CreateEspButton("🌈 เส้นสีรุ้ง Tracers: OFF 🔴", UDim2.new(0.05, 0, 0.40, 0), function(btn)
+    Tracers_Enabled = not Tracers_Enabled
+    btn.Text = Tracers_Enabled and "🌈 เส้นสีรุ้ง Tracers: ON 🟢" or "🌈 เส้นสีรุ้ง Tracers: OFF 🔴"
+end)
+
+CreateEspButton("🎯 Hitbox ใหญ่ขึ้น: OFF 🔴", UDim2.new(0.05, 0, 0.53, 0), function(btn)
+    Hitbox_Enabled = not Hitbox_Enabled
+    btn.Text = Hitbox_Enabled and "🎯 Hitbox ใหญ่ขึ้น: ON 🟢" or "🎯 Hitbox ใหญ่ขึ้น: OFF 🔴"
+end)
+
+local SizeFrame = Instance.new("Frame")
+SizeFrame.Parent = EspMainFrame
+SizeFrame.Size = UDim2.new(0.9, 0, 0, 30)
+SizeFrame.Position = UDim2.new(0.05, 0, 0.67, 0)
+SizeFrame.BackgroundTransparency = 1
+
+local SizeLabel = Instance.new("TextLabel")
+SizeLabel.Parent = SizeFrame
+SizeLabel.Size = UDim2.new(0.5, 0, 1, 0)
+SizeLabel.Text = "ขนาด Hitbox: " .. Hitbox_Size_Value
+SizeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+SizeLabel.TextSize = 12
+SizeLabel.Font = Enum.Font.SourceSansBold
+SizeLabel.BackgroundTransparency = 1
+
+local MinusBtn = Instance.new("TextButton")
+MinusBtn.Parent = SizeFrame
+MinusBtn.Size = UDim2.new(0.2, 0, 1, 0)
+MinusBtn.Position = UDim2.new(0.52, 0, 0, 0)
+MinusBtn.Text = "➖"
+MinusBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+MinusBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+local PlusBtn = Instance.new("TextButton")
+PlusBtn.Parent = SizeFrame
+PlusBtn.Size = UDim2.new(0.2, 0, 1, 0)
+PlusBtn.Position = UDim2.new(0.76, 0, 0, 0)
+PlusBtn.Text = "➕"
+PlusBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+PlusBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+MinusBtn.MouseButton1Click:Connect(function()
+    Hitbox_Size_Value = math.max(5, Hitbox_Size_Value - 5)
+    SizeLabel.Text = "ขนาด Hitbox: " .. Hitbox_Size_Value
+end)
+
+PlusBtn.MouseButton1Click:Connect(function()
+    Hitbox_Size_Value = math.min(50, Hitbox_Size_Value + 5)
+    SizeLabel.Text = "ขนาด Hitbox: " .. Hitbox_Size_Value
+end)
+
+CreateEspButton("❌ ซ่อนเมนู ESP นี้", UDim2.new(0.05, 0, 0.83, 0), function()
+    EspScreenGui.Enabled = false
+end)
+-- =================================================================
+-- Part 3: MAIN MENU UI FRAMEWORK & TAB SYSTEM
+-- =================================================================
+if ParentGui:FindFirstChild("KranCustomMainGui") then ParentGui.KranCustomMainGui:Destroy() end
+
+local MainScreenGui = Instance.new("ScreenGui")
+MainScreenGui.Name = "KranCustomMainGui"
+MainScreenGui.Parent = ParentGui
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.fromOffset(580, 380)
+MainFrame.Position = UDim2.new(0.5, -290, 0.5, -190)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = MainScreenGui
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 14)
+MainCorner.Parent = MainFrame
+
+local OuterGlowStroke = Instance.new("UIStroke")
+OuterGlowStroke.Name = "KranOuterGlowStroke"
+OuterGlowStroke.Thickness = RGB_Config.Size
+OuterGlowStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+OuterGlowStroke.LineJoinMode = Enum.LineJoinMode.Round
+OuterGlowStroke.Parent = MainFrame
+
+local DynamicGradient = Instance.new("UIGradient")
+DynamicGradient.Name = "DynamicRGBGradient"
+DynamicGradient.Parent = OuterGlowStroke
+
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 42)
+Header.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
+Header.BorderSizePixel = 0
+Header.Parent = MainFrame
+
+local HeaderCorner = Instance.new("UICorner")
+HeaderCorner.CornerRadius = UDim.new(0, 14)
+HeaderCorner.Parent = Header
+
+local TitleText = Instance.new("TextLabel")
+TitleText.Size = UDim2.new(0.5, 0, 1, 0)
+TitleText.Position = UDim2.new(0, 15, 0, 0)
+TitleText.Text = "👑 ALL MENU BY KRAN | VIP EDITION"
+TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleText.TextSize = 13
+TitleText.Font = Enum.Font.FredokaOne
+TitleText.TextXAlignment = Enum.TextXAlignment.Left
+TitleText.BackgroundTransparency = 1
+TitleText.Parent = Header
+
+local TopSearchBox = Instance.new("TextBox")
+TopSearchBox.Name = "KranTopSearchBar"
+TopSearchBox.Size = UDim2.new(0, 180, 0, 26)
+TopSearchBox.Position = UDim2.new(1, -195, 0, 8)
+TopSearchBox.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
+TopSearchBox.Text = ""
+TopSearchBox.PlaceholderText = "🔍 พิมพ์ค้นหาที่นี่..."
+TopSearchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 170)
+TopSearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+TopSearchBox.TextSize = 11
+TopSearchBox.Font = Enum.Font.SourceSansBold
+TopSearchBox.ClearTextOnFocus = false
+TopSearchBox.Parent = Header
+
+local TopSearchCorner = Instance.new("UICorner")
+TopSearchCorner.CornerRadius = UDim.new(0, 8)
+TopSearchCorner.Parent = TopSearchBox
+
+local TopSearchStroke = Instance.new("UIStroke")
+TopSearchStroke.Thickness = 1.5
+TopSearchStroke.Color = Color3.fromRGB(0, 200, 255)
+TopSearchStroke.Parent = TopSearchBox
+
+local Sidebar = Instance.new("Frame")
+Sidebar.Size = UDim2.new(0, 150, 1, -42)
+Sidebar.Position = UDim2.new(0, 0, 0, 42)
+Sidebar.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
+Sidebar.BorderSizePixel = 0
+Sidebar.Parent = MainFrame
+
+local ContentContainer = Instance.new("Frame")
+ContentContainer.Size = UDim2.new(1, -150, 1, -42)
+ContentContainer.Position = UDim2.new(0, 150, 0, 42)
+ContentContainer.BackgroundTransparency = 1
+ContentContainer.Parent = MainFrame
+
+ToggleBtn.MouseButton1Click:Connect(function()
+    MainScreenGui.Enabled = not MainScreenGui.Enabled
+end)
+
+local Tabs = {}
+local TabButtons = {}
+local RegisteredButtons = {}
+
+local TabListLayout = Instance.new("UIListLayout")
+TabListLayout.Parent = Sidebar
+TabListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+TabListLayout.Padding = UDim.new(0, 4)
+
+local function CreateTab(name, iconText)
+    local TabScroll = Instance.new("ScrollingFrame")
+    TabScroll.Size = UDim2.new(1, -20, 1, -20)
+    TabScroll.Position = UDim2.new(0, 10, 0, 10)
+    TabScroll.BackgroundTransparency = 1
+    TabScroll.ScrollBarThickness = 4
+    TabScroll.Visible = false
+    TabScroll.Parent = ContentContainer
+
+    local ScrollLayout = Instance.new("UIListLayout")
+    ScrollLayout.Parent = TabScroll
+    ScrollLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    ScrollLayout.Padding = UDim.new(0, 8)
+
+    ScrollLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        TabScroll.CanvasSize = UDim2.new(0, 0, 0, ScrollLayout.AbsoluteContentSize.Y + 15)
+    end)
+
+    local TabBtn = Instance.new("TextButton")
+    TabBtn.Size = UDim2.new(1, -10, 0, 36)
+    TabBtn.Position = UDim2.new(0, 5, 0, 0)
+    TabBtn.BackgroundColor3 = Color3.fromRGB(24, 24, 32)
+    TabBtn.Text = "  " .. iconText .. " " .. name
+    TabBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
+    TabBtn.TextSize = 12
+    TabBtn.Font = Enum.Font.SourceSansBold
+    TabBtn.TextXAlignment = Enum.TextXAlignment.Left
+    TabBtn.Parent = Sidebar
+
+    local TabBtnCorner = Instance.new("UICorner")
+    TabBtnCorner.CornerRadius = UDim.new(0, 6)
+    TabBtnCorner.Parent = TabBtn
+
+    TabBtn.MouseButton1Click:Connect(function()
+        for _, tScroll in pairs(Tabs) do tScroll.Visible = false end
+        for _, tBtn in pairs(TabButtons) do
+            tBtn.BackgroundColor3 = Color3.fromRGB(24, 24, 32)
+            tBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
+        end
+        TabScroll.Visible = true
+        TabBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 220)
+        TabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end)
+
+    table.insert(Tabs, TabScroll)
+    table.insert(TabButtons, TabBtn)
+
+    return TabScroll
+end
+
+local function AddSection(TabScroll, title)
+    local SecLabel = Instance.new("TextLabel")
+    SecLabel.Size = UDim2.new(1, 0, 0, 24)
+    SecLabel.Text = title
+    SecLabel.TextColor3 = Color3.fromRGB(0, 220, 255)
+    SecLabel.TextSize = 12
+    SecLabel.Font = Enum.Font.FredokaOne
+    SecLabel.TextXAlignment = Enum.TextXAlignment.Left
+    SecLabel.BackgroundTransparency = 1
+    SecLabel.Parent = TabScroll
+end
+
+local function AddButton(TabScroll, config)
+    local BtnFrame = Instance.new("Frame")
+    BtnFrame.Size = UDim2.new(1, -10, 0, 48)
+    BtnFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    BtnFrame.Parent = TabScroll
+
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 8)
+    BtnCorner.Parent = BtnFrame
+
+    local TitleLabel = Instance.new("TextLabel")
+    TitleLabel.Size = UDim2.new(1, -10, 0, 22)
+    TitleLabel.Position = UDim2.new(0, 10, 0, 4)
+    TitleLabel.Text = config.Title
+    TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TitleLabel.TextSize = 12
+    TitleLabel.Font = Enum.Font.SourceSansBold
+    TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.Parent = BtnFrame
+
+    local DescLabel = Instance.new("TextLabel")
+    DescLabel.Size = UDim2.new(1, -10, 0, 18)
+    DescLabel.Position = UDim2.new(0, 10, 0, 24)
+    DescLabel.Text = config.Description or ""
+    DescLabel.TextColor3 = Color3.fromRGB(150, 150, 160)
+    DescLabel.TextSize = 10
+    DescLabel.Font = Enum.Font.SourceSans
+    DescLabel.TextXAlignment = Enum.TextXAlignment.Left
+    DescLabel.BackgroundTransparency = 1
+    DescLabel.Parent = BtnFrame
+
+    local ClickBtn = Instance.new("TextButton")
+    ClickBtn.Size = UDim2.new(1, 0, 1, 0)
+    ClickBtn.BackgroundTransparency = 1
+    ClickBtn.Text = ""
+    ClickBtn.Parent = BtnFrame
+
+    ClickBtn.MouseButton1Click:Connect(function()
+        local FlashFrame = Instance.new("Frame")
+        FlashFrame.Size = UDim2.new(1, 0, 1, 0)
+        FlashFrame.BackgroundColor3 = Color3.fromRGB(0, 230, 255)
+        FlashFrame.BackgroundTransparency = 0.8
+        FlashFrame.BorderSizePixel = 0
+        FlashFrame.Parent = BtnFrame
+        
+        local FlashCorner = Instance.new("UICorner")
+        FlashCorner.CornerRadius = UDim.new(0, 8)
+        FlashCorner.Parent = FlashFrame
+
+        TweenService:Create(FlashFrame, TweenInfo.new(0.35), {BackgroundTransparency = 1}):Play()
+        task.delay(0.4, function() FlashFrame:Destroy() end)
+
+        if config.Callback then config.Callback() end
+    end)
+
+    table.insert(RegisteredButtons, {
+        Frame = BtnFrame,
+        SearchText = string.lower(config.Title .. " " .. (config.Description or ""))
+    })
+end
+
+local function AddToggle(TabScroll, title, default, callback)
+    local state = default or false
+
+    local ToggleFrame = Instance.new("Frame")
+    ToggleFrame.Size = UDim2.new(1, -10, 0, 38)
+    ToggleFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    ToggleFrame.Parent = TabScroll
+
+    local ToggleCorner = Instance.new("UICorner")
+    ToggleCorner.CornerRadius = UDim.new(0, 8)
+    ToggleCorner.Parent = ToggleFrame
+
+    local Label = Instance.new("TextLabel")
+    Label.Size = UDim2.new(0.7, 0, 1, 0)
+    Label.Position = UDim2.new(0, 10, 0, 0)
+    Label.Text = title
+    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Label.TextSize = 12
+    Label.Font = Enum.Font.SourceSansBold
+    Label.TextXAlignment = Enum.TextXAlignment.Left
+    Label.BackgroundTransparency = 1
+    Label.Parent = ToggleFrame
+
+    local StatusBtn = Instance.new("TextButton")
+    StatusBtn.Size = UDim2.new(0, 70, 0, 24)
+    StatusBtn.Position = UDim2.new(1, -80, 0.5, -12)
+    StatusBtn.BackgroundColor3 = state and Color3.fromRGB(0, 200, 100) or Color3.fromRGB(180, 40, 40)
+    StatusBtn.Text = state and "ON 🟢" or "OFF 🔴"
+    StatusBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    StatusBtn.TextSize = 11
+    StatusBtn.Font = Enum.Font.SourceSansBold
+    StatusBtn.Parent = ToggleFrame
+
+    local StatusCorner = Instance.new("UICorner")
+    StatusCorner.CornerRadius = UDim.new(0, 6)
+    StatusCorner.Parent = StatusBtn
+
+    StatusBtn.MouseButton1Click:Connect(function()
+        state = not state
+        StatusBtn.BackgroundColor3 = state and Color3.fromRGB(0, 200, 100) or Color3.fromRGB(180, 40, 40)
+        StatusBtn.Text = state and "ON 🟢" or "OFF 🔴"
+        if callback then callback(state) end
+    end)
+end
+
+TopSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    local SearchText = string.lower(TopSearchBox.Text)
+    for _, btnData in pairs(RegisteredButtons) do
+        if SearchText == "" or string.find(btnData.SearchText, SearchText) then
+            btnData.Frame.Visible = true
+        else
+            btnData.Frame.Visible = false
+        end
+    end
+end)
+-- =================================================================
+-- Part 4: TABS CONTENT & RGB CONTROLLER SETTINGS
+-- =================================================================
+local TabMain = CreateTab("ฟีเจอร์หลัก", "⚡")
+local TabPlayer = CreateTab("ตัวละคร & เคลื่อนที่", "👤")
+local TabUniversal = CreateTab("ล็อคเป้า & ESP", "🎯")
+local TabVisuals = CreateTab("วิชวล & บรรยากาศ", "👁️")
+local TabGames = CreateTab("รวมแมพฮิต", "🎮")
+local TabProfile = CreateTab("โปรไฟล์ VIP", "👑")
+local TabSettings = CreateTab("ตั้งค่าระบบ & RGB", "⚙️")
+
+Tabs[1].Visible = true
+TabButtons[1].BackgroundColor3 = Color3.fromRGB(0, 180, 220)
+TabButtons[1].TextColor3 = Color3.fromRGB(255, 255, 255)
+
+AddSection(TabMain, "👑 สคริปต์หลัก VIP (RVX V2)")
+AddButton(TabMain, {
+    Title = "👑 รันสคริปต์ VIP (RVX V2)",
+    Description = "คลิกเพื่อเปิดใช้งานสคริปต์หลัก RVX V2",
+    Callback = function()
+        loadstring(game:HttpGet("https://rvxv2-production-c788.up.railway.app/vip", true))()
+    end
+})
+
+AddSection(TabMain, "🥵 สคริปต์สุดฮอต & แก้ไขระบบ")
+AddButton(TabMain, {
+    Title = "🥵 Kei Hot Special Script",
+    Description = "เปิดใช้งานสคริปต์พิเศษสุดฮอต",
+    Callback = function()
+        loadstring(game:HttpGet("https://kei-scripts.vercel.app/raw/6bed0a68-5ac7-4025-a269-422087fa024f"))()
+    end
+})
+
+AddButton(TabMain, {
+    Title = "🛠️ สคริปต์แก้ไขระบบ",
+    Description = "กดเพื่อรันสคริปต์แก้ไขปัญหาเพิ่มเติม",
+    Callback = function()
+        loadstring(game:HttpGet("https://pastefy.app/qDfr2YYT/raw"))()
+    end
+})
+
+AddSection(TabPlayer, "🕊️ การเคลื่อนที่ (Movement)")
+AddButton(TabPlayer, {
+    Title = "1. Fly GUI (สคริปต์บิน)",
+    Description = "บินบนฟ้า ควบคุมทิศทางอิสระ",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Vencible-fly-gui-R15-210034"))()
+    end
+})
+
+AddButton(TabPlayer, {
+    Title = "2. Auto Wallhop (สคริปต์ไต่กำแพง)",
+    Description = "กระโดดไต่กำแพงอัตโนมัติ (VXH)",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-VXH-auto-wallhop-42751"))()
+    end
+})
+
+AddButton(TabPlayer, {
+    Title = "3. Shiftlock Mobile (ปุ่มล็อคเป้ามือถือ)",
+    Description = "เพิ่มปุ่มล็อคเป้ากลางจอสำหรับสายมือถือ",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/MiniAssasin/Shiftlock/main/ShiftlockMobile.lua"))()
+    end
+})
+
+AddSection(TabPlayer, "👻 พรางตัว & สายป่วน (Stealth & Emotes)")
+AddButton(TabPlayer, {
+    Title = "4. FE Invisible (สคริปต์ล่องหน)",
+    Description = "หายตัว ให้คนอื่นมองไม่เห็นตัวเรา",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Fe-Invisible-56490"))()
+    end
+})
+
+AddButton(TabPlayer, {
+    Title = "5. UFGUI (สคริปต์ Fling ชนคนปลิว)",
+    Description = "สคริปต์หมุนตัวชนผู้เล่นอื่นปลิว (sypcerr)",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sypcerr/scripts/refs/heads/main/UFGUI", true))()
+    end
+})
+
+AddButton(TabPlayer, {
+    Title = "6. FE All Emotes (ท่าทางฟรีทุกแมพ)",
+    Description = "ปลดล็อคใช้งานท่าทาง (Emotes) ได้ทุกเกม",
+    Callback = function()
+        loadstring(game:HttpGet("https://kei-scripts.vercel.app/raw/9677ab5f-49d7-42e7-be9f-bc09e13d1b85"))()
+    end
+})
+
+AddSection(TabUniversal, "👑 คำสั่งแอดมิน (Admin Script)")
+AddButton(TabUniversal, {
+    Title = "1. Infinite Yield (คำสั่ง Admin 100+)",
+    Description = "สคริปต์คำสั่งแอดมินยอดฮิตอันดับ 1",
+    Callback = function()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+    end
+})
+
+AddSection(TabUniversal, "📦 เมนู ESP สีรุ้ง & Hitbox Hub (UI แยก)")
+AddButton(TabUniversal, {
+    Title = "🌈 เปิด / ปิด หน้าต่างเมนู ESP สีรุ้ง",
+    Description = "กดเพื่อเปิด/ปิด หน้าต่างเมนูควบคุม ESP ข้างจอ",
+    Callback = function()
+        EspScreenGui.Enabled = not EspScreenGui.Enabled
+    end
+})
+
+AddSection(TabUniversal, "🎯 ระบบ Aimbot & ล็อคเป้า")
+AddButton(TabUniversal, {
+    Title = "Universal Aimbot (ล็อคเป้าอัตโนมัติ)",
+    Description = "สคริปต์ Aimbot ล็อคเป้าหมายอัตโนมัติ",
+    Callback = function()
+        loadstring(game:HttpGet("https://gist.githubusercontent.com/djuka843/29b1f2f70d72a8ac1f4be782cb198ca7/raw/ea00160d8be826e0922efa2f2320930bb18592e7/gistfile1.txt"))()
+    end
+})
+
+AddButton(TabUniversal, {
+    Title = "Universal Silent Aim (ยิงโดนหัวไม่ต้องเล็ง)",
+    Description = "กระสุนพุ่งเข้าหัวเป้าหมายเองอัตโนมัติ",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/AimbotScript/SilentAim/main/Script.lua"))()
+    end
+})
+
+AddSection(TabVisuals, "💡 แสงสว่าง & บรรยากาศ")
+AddToggle(TabVisuals, "1. เปิดไฟสว่าง 100% (Fullbright)", false, function(Value)
+    if Value then
+        game:GetService("Lighting").Ambient = Color3.fromRGB(255, 255, 255)
+        game:GetService("Lighting").Brightness = 2
+        game:GetService("Lighting").GlobalShadows = false
+    else
+        game:GetService("Lighting").Ambient = Color3.fromRGB(127, 127, 127)
+        game:GetService("Lighting").Brightness = 1
+        game:GetService("Lighting").GlobalShadows = true
+    end
+end)
+
+AddButton(TabVisuals, {
+    Title = "2. ลบหมอกในแมพ (Remove Fog)",
+    Description = "ลบหมอกและบรรยากาศมืดเพื่อให้มองเห็นไกลๆ",
+    Callback = function()
+        game:GetService("Lighting").FogEnd = 9e9
+        for _, v in pairs(game:GetService("Lighting"):GetChildren()) do
+            if v:IsA("Atmosphere") then v:Destroy() end
+        end
+    end
+})
+
+AddSection(TabGames, "🏴‍☠️ สคริปต์เกมยอดฮิต (Popular Games)")
+AddButton(TabGames, {
+    Title = "1. Blox Fruits - Redz Hub",
+    Description = "สคริปต์ฟาร์มออโต้ยอดฮิตสำหรับ Blox Fruits",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/BloxFruits/main/Source.lua"))()
+    end
+})
+
+AddButton(TabGames, {
+    Title = "2. Blade Ball - Auto Parry",
+    Description = "สคริปต์ปัดบอลอัตโนมัติสำหรับ Blade Ball",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/3345-c-a-t-s-u-s/-Pro2/main/blade"))()
+    end
+})
+
+AddButton(TabGames, {
+    Title = "3. Fisch - Speed Hub",
+    Description = "สคริปต์ตกปลาออโต้สำหรับเกม Fisch",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadDark/Speed-Hub-X/main/Speed%20Hub%20X.lua"))()
+    end
+})
+
+AddSection(TabProfile, "👑 บัตรประจำตัว VIP")
+local ProfText = Instance.new("TextLabel")
+ProfText.Size = UDim2.new(1, -10, 0, 90)
+ProfText.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+ProfText.Text = "🔥 ยินดีต้อนรับผู้ใช้งาน: " .. LocalPlayer.DisplayName ..
+                "\n📌 Username: @" .. LocalPlayer.Name ..
+                "\n🆔 User ID: " .. LocalPlayer.UserId ..
+                "\n📅 อายุบัญชี: " .. LocalPlayer.AccountAge .. " วัน" ..
+                "\n💎 ยศใช้งาน: VIP Master Owner (all menu By Kran)"
+ProfText.TextColor3 = Color3.fromRGB(255, 255, 255)
+ProfText.TextSize = 11
+ProfText.Font = Enum.Font.SourceSansBold
+ProfText.TextXAlignment = Enum.TextXAlignment.Left
+ProfText.Parent = TabProfile
+
+local ProfCorner = Instance.new("UICorner")
+ProfCorner.CornerRadius = UDim.new(0, 8)
+ProfCorner.Parent = ProfText
+
+AddButton(TabProfile, {
+    Title = "📋 คัดลอก User ID ของฉัน",
+    Description = "คัดลอก ID ผู้ใช้ลง Clipboard ทันที",
+    Callback = function()
+        setclipboard(tostring(LocalPlayer.UserId))
+    end
+})
+
+AddSection(TabSettings, "🎨 ปรับแต่งระบบไฟ & ขอบเรืองแสง (RGB Config)")
+
+AddButton(TabSettings, {
+    Title = "🎨 เปลี่ยนโหมดสี: 🌈 Rainbow (สีรุ้ง)",
+    Description = "สลับสีรุ้งหลากสีพร้อมคลื่นไฟวิ่งสลับจุดจาง/เข้ม",
+    Callback = function()
+        RGB_Config.Mode = "Rainbow"
+    end
+})
+
+AddButton(TabSettings, {
+    Title = "🟢 เปลี่ยนโหมดสี: Neon Green (เขียวไล่ระดับ)",
+    Description = "สีเขียวนีออน สลับจุดเข้ม-จาง วนลูปแสดงการทำงาน",
+    Callback = function()
+        RGB_Config.Mode = "Green"
+    end
+})
+
+AddButton(TabSettings, {
+    Title = "🔵 เปลี่ยนโหมดสี: Cyan-Blue (ไซแอน-น้ำเงิน)",
+    Description = "สีฟ้าไซแอนไล่ระดับน้ำเงินเข้ม พริ้วไหวสวยงาม",
+    Callback = function()
+        RGB_Config.Mode = "Cyan"
+    end
+})
+
+AddButton(TabSettings, {
+    Title = "🔴 เปลี่ยนโหมดสี: Red-Gold (แดง-ทอง)",
+    Description = "สีแดงเพลิงสลับทอง นีออนวิบวับเข้มจางหมุนวน",
+    Callback = function()
+        RGB_Config.Mode = "Fire"
+    end
+})
+
+AddButton(TabSettings, {
+    Title = "⚡ ความเร็วไฟ: สลับ (ช้า ➔ ปกติ ➔ เร็ว)",
+    Description = "กดเพื่อเปลี่ยนระดับความเร็วการวน/หมุนไฟ",
+    Callback = function()
+        if RGB_Config.Speed == 1 then
+            RGB_Config.Speed = 2.5
+        elseif RGB_Config.Speed == 2.5 then
+            RGB_Config.Speed = 0.4
+        else
+            RGB_Config.Speed = 1
+        end
+    end
+})
+
+AddButton(TabSettings, {
+    Title = "📐 ขนาดเส้นขอบไฟ: สลับ (เล็ก ➔ ปานกลาง ➔ ใหญ่)",
+    Description = "กดเพื่อปรับระดับความหนาของเส้นขอบเรืองแสง",
+    Callback = function()
+        if RGB_Config.Size == 4 then
+            RGB_Config.Size = 7
+        elseif RGB_Config.Size == 7 then
+            RGB_Config.Size = 2
+        else
+            RGB_Config.Size = 4
+        end
+        OuterGlowStroke.Thickness = RGB_Config.Size
+        UIStrokeToggle.Thickness = RGB_Config.Size
+    end
+})
+
+AddSection(TabSettings, "🔄 ระบบทั่วไป")
+local AntiAfkEnabled = false
+AddToggle(TabSettings, "1. เปิดระบบ Anti-AFK (กันโดนเตะออกจากเกม)", false, function(Value)
+    AntiAfkEnabled = Value
+end)
+
+LocalPlayer.Idled:Connect(function()
+    if AntiAfkEnabled then
+        game:GetService("VirtualUser"):CaptureController()
+        game:GetService("VirtualUser"):ClickButton2(Vector2.new())
+    end
+end)
+
+AddButton(TabSettings, {
+    Title = "2. เข้าเซิร์ฟเดิมใหม่ (Rejoin Server)",
+    Description = "โหลดรีเซ็ตเข้าเซิร์ฟเวอร์ปัจจุบันอีกครั้ง",
+    Callback = function()
+        game:GetService("TeleportService"):Teleport(game.PlaceId, LocalPlayer)
+    end
+})
+
+AddButton(TabSettings, {
+    Title = "3. ปิดสคริปต์ทั้งหมด (Destroy All UI)",
+    Description = "ปิดหน้าต่างสคริปต์ทั้งหมด ปุ่มลอย 👑 และเมนู ESP",
+    Callback = function()
+        if ToggleGui then ToggleGui:Destroy() end
+        if EspScreenGui then EspScreenGui:Destroy() end
+        if MainScreenGui then MainScreenGui:Destroy() end
+        for plr, _ in pairs(ESP_Objects) do
+            if ESP_Objects[plr] then
+                for _, obj in pairs(ESP_Objects[plr]) do obj:Remove() end
+            end
+        end
+    end
+})
+-- =================================================================
+-- Part 5: ESP RENDERING & RENDER LOOP FOR RGB
+-- =================================================================
+local function CreateESPForPlayer(plr)
+    if not Drawing then return end
+    local objects = {
+        Box = Drawing.new("Square"),
+        BoxOutline = Drawing.new("Square"),
+        HealthBG = Drawing.new("Square"),
+        HealthFill = Drawing.new("Square"),
+        Tracer = Drawing.new("Line")
+    }
+    objects.Box.Color = Color3.fromRGB(255, 50, 50)
+    objects.Box.Thickness = 1.5
+    objects.BoxOutline.Color = Color3.fromRGB(0, 0, 0)
+    objects.BoxOutline.Thickness = 3
+    objects.HealthBG.Color = Color3.fromRGB(20, 20, 20)
+    objects.HealthBG.Filled = true
+    objects.HealthFill.Color = Color3.fromRGB(0, 255, 0)
+    objects.HealthFill.Filled = true
+    objects.Tracer.Thickness = 1.5
+    ESP_Objects[plr] = objects
+end
+
+local function RemoveESPForPlayer(plr)
+    if ESP_Objects[plr] then
+        for _, obj in pairs(ESP_Objects[plr]) do obj:Remove() end
+        ESP_Objects[plr] = nil
+    end
+end
+
+local function UpdateESP(plr)
+    if not Drawing then return end
+    if not ESP_Objects[plr] then CreateESPForPlayer(plr) end
+    local objs = ESP_Objects[plr]
+    local char = plr.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    local head = char and char:FindFirstChild("Head")
+    local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+
+    if char then
+        local highlight = char:FindFirstChild("YellowHighlight")
+        if Highlight_Enabled then
+            if not highlight then
+                highlight = Instance.new("Highlight")
+                highlight.Name = "YellowHighlight"
+                highlight.FillColor = Color3.fromRGB(255, 230, 0)
+                highlight.OutlineColor = Color3.fromRGB(255, 255, 0)
+                highlight.FillTransparency = 0.6
+                highlight.Parent = char
+            end
+        else
+            if highlight then highlight:Destroy() end
+        end
+    end
+
+    if char and hrp and head and humanoid and humanoid.Health > 0 then
+        local headWorldPos = head.Position + Vector3.new(0, 1.2, 0)
+        local legWorldPos = hrp.Position - Vector3.new(0, 3.2, 0)
+
+        local headScreen, headOnScreen = Camera:WorldToViewportPoint(headWorldPos)
+        local legScreen, legOnScreen = Camera:WorldToViewportPoint(legWorldPos)
+
+        if headOnScreen or legOnScreen then
+            local boxHeight = math.abs(headScreen.Y - legScreen.Y)
+            local boxWidth = boxHeight / 1.6
+            local boxPos = Vector2.new(headScreen.X - boxWidth / 2, headScreen.Y)
+
+            if Box_Enabled then
+                objs.BoxOutline.Position = boxPos
+                objs.BoxOutline.Size = Vector2.new(boxWidth, boxHeight)
+                objs.BoxOutline.Visible = true
+
+                objs.Box.Position = boxPos
+                objs.Box.Size = Vector2.new(boxWidth, boxHeight)
+                objs.Box.Visible = true
+
+                local barWidth = 3
+                local barOffset = 4
+                local barPos = Vector2.new(boxPos.X + boxWidth + barOffset, boxPos.Y)
+
+                objs.HealthBG.Position = barPos
+                objs.HealthBG.Size = Vector2.new(barWidth, boxHeight)
+                objs.HealthBG.Visible = true
+
+                local hpPercent = math.clamp(humanoid.Health / humanoid.MaxHealth, 0, 1)
+                local fillHeight = boxHeight * hpPercent
+                objs.HealthFill.Position = Vector2.new(barPos.X, barPos.Y + (boxHeight - fillHeight))
+                objs.HealthFill.Size = Vector2.new(barWidth, fillHeight)
+                objs.HealthFill.Color = Color3.fromRGB(255 * (1 - hpPercent), 255 * hpPercent, 0)
+                objs.HealthFill.Visible = true
+            else
+                objs.Box.Visible = false
+                objs.BoxOutline.Visible = false
+                objs.HealthBG.Visible = false
+                objs.HealthFill.Visible = false
+            end
+
+            if Tracers_Enabled then
+                objs.Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+                objs.Tracer.To = Vector2.new(headScreen.X, legScreen.Y)
+                objs.Tracer.Color = Color3.fromHSV(((tick() * RGB_Config.Speed) % 1), 1, 1)
+                objs.Tracer.Visible = true
+            else
+                objs.Tracer.Visible = false
+            end
+            return
+        end
+    end
+
+    objs.Box.Visible = false
+    objs.BoxOutline.Visible = false
+    objs.HealthBG.Visible = false
+    objs.HealthFill.Visible = false
+    objs.Tracer.Visible = false
+end
+
+local function UpdateHitbox(v)
+    if v == LocalPlayer or not v.Character then return end
+    local hrp = v.Character:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        if Hitbox_Enabled then
+            hrp.Size = Vector3.new(Hitbox_Size_Value, Hitbox_Size_Value, Hitbox_Size_Value)
+            hrp.Transparency = 0.75
+            hrp.BrickColor = BrickColor.new("Really red")
+            hrp.Material = Enum.Material.Neon
+            hrp.CanCollide = false
+        else
+            hrp.Size = Vector3.new(2, 2, 1)
+            hrp.Transparency = 1
+        end
+    end
+end
+
+Players.PlayerRemoving:Connect(RemoveESPForPlayer)
+
+-- =================================================================
+-- MAIN LOOP FOR LIGHTING & ROTATION
+-- =================================================================
+RunService.RenderStepped:Connect(function()
+    DynamicGradient.Color = GetCustomSequence(RGB_Config.Mode, 0)
+    DynamicGradient.Rotation = (DynamicGradient.Rotation + (2 * RGB_Config.Speed)) % 360
+
+    UIStrokeToggle.Color = DynamicGradient.Color.Keypoints[1].Value
+    EspUIStroke.Color = DynamicGradient.Color.Keypoints[#DynamicGradient.Color.Keypoints].Value
+
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer then
+            UpdateESP(v)
+            UpdateHitbox(v)
+        end
+    end
+end)
