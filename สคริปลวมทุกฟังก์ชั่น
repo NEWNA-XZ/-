@@ -1,0 +1,553 @@
+-- =================================================================
+-- 👑 ALL MENU BY KRAN (RGB BORDER FIXED EDITION)
+-- 💎 Outer Rainbow RGB Glow Fixed + Full Features
+-- =================================================================
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local CoreGui = game:GetService("CoreGui")
+
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local Camera = workspace.CurrentCamera
+local ParentGui = (CoreGui:FindFirstChild("RobloxGui") and CoreGui) or PlayerGui
+
+-- ------------------------------------------------
+-- 🌈 RGB Utility Function
+-- ------------------------------------------------
+local function GetRainbowColor(speed, offset)
+    speed = speed or 0.4
+    offset = offset or 0
+    return Color3.fromHSV(((tick() * speed) + offset) % 1, 1, 1)
+end
+
+-- ดึงรูปอวาตาร์โปรไฟล์ของผู้เล่น
+local AvatarImg = "rbxassetid://0"
+pcall(function()
+    AvatarImg = Players:GetUserThumbnailAsync(
+        LocalPlayer.UserId,
+        Enum.ThumbnailType.HeadShot,
+        Enum.ThumbnailSize.Size420x420
+    )
+end)
+
+-- ------------------------------------------------
+-- 🚀 1. หน้าตารอโหลด (Cyberpunk Splash Loading)
+-- ------------------------------------------------
+if ParentGui:FindFirstChild("KranLoadingScreen") then ParentGui.KranLoadingScreen:Destroy() end
+
+local SplashGui = Instance.new("ScreenGui")
+SplashGui.Name = "KranLoadingScreen"
+SplashGui.Parent = ParentGui
+SplashGui.ResetOnSpawn = false
+
+local SplashFrame = Instance.new("Frame")
+SplashFrame.Size = UDim2.fromOffset(420, 240)
+SplashFrame.Position = UDim2.new(0.5, -210, 0.5, -120)
+SplashFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 16)
+SplashFrame.BorderSizePixel = 0
+SplashFrame.Parent = SplashGui
+
+local SplashCorner = Instance.new("UICorner")
+SplashCorner.CornerRadius = UDim.new(0, 16)
+SplashCorner.Parent = SplashFrame
+
+local SplashStroke = Instance.new("UIStroke")
+SplashStroke.Thickness = 3
+SplashStroke.Parent = SplashFrame
+
+local ProfileImage = Instance.new("ImageLabel")
+ProfileImage.Size = UDim2.fromOffset(70, 70)
+ProfileImage.Position = UDim2.new(0.5, -35, 0.12, 0)
+ProfileImage.Image = AvatarImg
+ProfileImage.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+ProfileImage.Parent = SplashFrame
+
+local ProfileCorner = Instance.new("UICorner")
+ProfileCorner.CornerRadius = UDim.new(1, 0)
+ProfileCorner.Parent = ProfileImage
+
+local LoadTitle = Instance.new("TextLabel")
+LoadTitle.Size = UDim2.new(1, 0, 0, 30)
+LoadTitle.Position = UDim2.new(0, 0, 0.46, 0)
+LoadTitle.Text = "⚡ ALL MENU BY KRAN ⚡"
+LoadTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+LoadTitle.TextSize = 18
+LoadTitle.Font = Enum.Font.FredokaOne
+LoadTitle.BackgroundTransparency = 1
+LoadTitle.Parent = SplashFrame
+
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Size = UDim2.new(1, 0, 0, 20)
+StatusLabel.Position = UDim2.new(0, 0, 0.60, 0)
+StatusLabel.Text = "🔥 กำลังแก้ไขระบบขอบ RGB..."
+StatusLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+StatusLabel.TextSize = 12
+StatusLabel.Font = Enum.Font.SourceSansBold
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Parent = SplashFrame
+
+local BarBG = Instance.new("Frame")
+BarBG.Size = UDim2.new(0.8, 0, 0, 10)
+BarBG.Position = UDim2.new(0.1, 0, 0.78, 0)
+BarBG.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+BarBG.BorderSizePixel = 0
+BarBG.Parent = SplashFrame
+
+local BarFill = Instance.new("Frame")
+BarFill.Size = UDim2.new(0, 0, 1, 0)
+BarFill.BackgroundColor3 = Color3.fromRGB(0, 255, 170)
+BarFill.BorderSizePixel = 0
+BarFill.Parent = BarBG
+
+TweenService:Create(BarFill, TweenInfo.new(1.0, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 1, 0)}):Play()
+task.wait(0.3)
+StatusLabel.Text = "💎 ติดตั้งขอบเรืองแสงสีรุ้งแบบใหม่..."
+task.wait(0.3)
+StatusLabel.Text = "🚀 พร้อมใช้งานแล้ว!"
+task.wait(0.2)
+SplashGui:Destroy()
+
+-- ------------------------------------------------
+-- 🟢 ตัวแปรระบบ ESP & Hitbox
+-- ------------------------------------------------
+local Box_Enabled = false
+local Highlight_Enabled = false
+local Tracers_Enabled = false
+local Hitbox_Enabled = false
+local Hitbox_Size_Value = 15
+local ESP_Objects = {}
+
+-- ------------------------------------------------
+-- 📱 2. ปุ่มลอยเปิด/ปิดเมนูทรงกลม RGB (ปุ่ม 👑)
+-- ------------------------------------------------
+if ParentGui:FindFirstChild("KranMenuToggle") then ParentGui.KranMenuToggle:Destroy() end
+
+local ToggleGui = Instance.new("ScreenGui")
+ToggleGui.Name = "KranMenuToggle"
+ToggleGui.Parent = ParentGui
+
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Name = "ToggleBtn"
+ToggleBtn.Parent = ToggleGui
+ToggleBtn.Size = UDim2.fromOffset(50, 50)
+ToggleBtn.Position = UDim2.new(0, 15, 0.4, 0)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+ToggleBtn.Text = "👑"
+ToggleBtn.TextSize = 24
+ToggleBtn.Active = true
+ToggleBtn.Draggable = true
+
+local UICornerToggle = Instance.new("UICorner")
+UICornerToggle.CornerRadius = UDim.new(1, 0)
+UICornerToggle.Parent = ToggleBtn
+
+local UIStrokeToggle = Instance.new("UIStroke")
+UIStrokeToggle.Thickness = 3
+UIStrokeToggle.Parent = ToggleBtn
+
+-- ------------------------------------------------
+-- 🎨 3. หน้าต่าง ESP UI แยกข้างจอ
+-- ------------------------------------------------
+if ParentGui:FindFirstChild("KranEspMenuFrame") then ParentGui.KranEspMenuFrame:Destroy() end
+
+local EspScreenGui = Instance.new("ScreenGui")
+EspScreenGui.Name = "KranEspMenuFrame"
+EspScreenGui.Parent = ParentGui
+EspScreenGui.Enabled = false
+
+local EspMainFrame = Instance.new("Frame")
+EspMainFrame.Name = "EspMainFrame"
+EspMainFrame.Parent = EspScreenGui
+EspMainFrame.Size = UDim2.fromOffset(250, 330)
+EspMainFrame.Position = UDim2.new(0.02, 0, 0.2, 0)
+EspMainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+EspMainFrame.Active = true
+EspMainFrame.Draggable = true
+
+local EspCorner = Instance.new("UICorner")
+EspCorner.CornerRadius = UDim.new(0, 12)
+EspCorner.Parent = EspMainFrame
+
+local EspUIStroke = Instance.new("UIStroke")
+EspUIStroke.Thickness = 3
+EspUIStroke.Parent = EspMainFrame
+
+local EspTitle = Instance.new("TextLabel")
+EspTitle.Parent = EspMainFrame
+EspTitle.Size = UDim2.new(1, 0, 0, 38)
+EspTitle.Text = "📦 ESP & HITBOX VIP | KRAN"
+EspTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+EspTitle.TextSize = 13
+EspTitle.Font = Enum.Font.FredokaOne
+EspTitle.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 12)
+TitleCorner.Parent = EspTitle
+
+local function CreateEspButton(text, pos, callback)
+    local Btn = Instance.new("TextButton")
+    Btn.Parent = EspMainFrame
+    Btn.Size = UDim2.new(0.9, 0, 0, 34)
+    Btn.Position = pos
+    Btn.BackgroundColor3 = Color3.fromRGB(30, 30, 42)
+    Btn.Text = text
+    Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Btn.TextSize = 12
+    Btn.Font = Enum.Font.SourceSansBold
+    
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 8)
+    BtnCorner.Parent = Btn
+    
+    Btn.MouseButton1Click:Connect(function() callback(Btn) end)
+    return Btn
+end
+
+CreateEspButton("📦 กรอบ 2D Box + หลอดเลือด: OFF 🔴", UDim2.new(0.05, 0, 0.14, 0), function(btn)
+    Box_Enabled = not Box_Enabled
+    btn.Text = Box_Enabled and "📦 กรอบ 2D Box + หลอดเลือด: ON 🟢" or "📦 กรอบ 2D Box + หลอดเลือด: OFF 🔴"
+end)
+
+CreateEspButton("✨ Highlight เรืองแสงสีเหลือง: OFF 🔴", UDim2.new(0.05, 0, 0.27, 0), function(btn)
+    Highlight_Enabled = not Highlight_Enabled
+    btn.Text = Highlight_Enabled and "✨ Highlight เรืองแสงสีเหลือง: ON 🟢" or "✨ Highlight เรืองแสงสีเหลือง: OFF 🔴"
+end)
+
+CreateEspButton("🌈 เส้นสีรุ้ง Tracers: OFF 🔴", UDim2.new(0.05, 0, 0.40, 0), function(btn)
+    Tracers_Enabled = not Tracers_Enabled
+    btn.Text = Tracers_Enabled and "🌈 เส้นสีรุ้ง Tracers: ON 🟢" or "🌈 เส้นสีรุ้ง Tracers: OFF 🔴"
+end)
+
+CreateEspButton("🎯 Hitbox ใหญ่ขึ้น: OFF 🔴", UDim2.new(0.05, 0, 0.53, 0), function(btn)
+    Hitbox_Enabled = not Hitbox_Enabled
+    btn.Text = Hitbox_Enabled and "🎯 Hitbox ใหญ่ขึ้น: ON 🟢" or "🎯 Hitbox ใหญ่ขึ้น: OFF 🔴"
+end)
+
+local SizeFrame = Instance.new("Frame")
+SizeFrame.Parent = EspMainFrame
+SizeFrame.Size = UDim2.new(0.9, 0, 0, 30)
+SizeFrame.Position = UDim2.new(0.05, 0, 0.67, 0)
+SizeFrame.BackgroundTransparency = 1
+
+local SizeLabel = Instance.new("TextLabel")
+SizeLabel.Parent = SizeFrame
+SizeLabel.Size = UDim2.new(0.5, 0, 1, 0)
+SizeLabel.Text = "ขนาด Hitbox: " .. Hitbox_Size_Value
+SizeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+SizeLabel.TextSize = 12
+SizeLabel.Font = Enum.Font.SourceSansBold
+SizeLabel.BackgroundTransparency = 1
+
+local MinusBtn = Instance.new("TextButton")
+MinusBtn.Parent = SizeFrame
+MinusBtn.Size = UDim2.new(0.2, 0, 1, 0)
+MinusBtn.Position = UDim2.new(0.52, 0, 0, 0)
+MinusBtn.Text = "➖"
+MinusBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+MinusBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+local PlusBtn = Instance.new("TextButton")
+PlusBtn.Parent = SizeFrame
+PlusBtn.Size = UDim2.new(0.2, 0, 1, 0)
+PlusBtn.Position = UDim2.new(0.76, 0, 0, 0)
+PlusBtn.Text = "➕"
+PlusBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+PlusBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+MinusBtn.MouseButton1Click:Connect(function()
+    Hitbox_Size_Value = math.max(5, Hitbox_Size_Value - 5)
+    SizeLabel.Text = "ขนาด Hitbox: " .. Hitbox_Size_Value
+end)
+
+PlusBtn.MouseButton1Click:Connect(function()
+    Hitbox_Size_Value = math.min(50, Hitbox_Size_Value + 5)
+    SizeLabel.Text = "ขนาด Hitbox: " .. Hitbox_Size_Value
+end)
+
+CreateEspButton("❌ ซ่อนเมนู ESP นี้", UDim2.new(0.05, 0, 0.83, 0), function()
+    EspScreenGui.Enabled = false
+end)
+
+-- ------------------------------------------------
+-- 🏗️ 4. หน้าต่างหลัก CUSTOM MAIN MENU (แก้ไขขอบ RGB ให้ชัวร์)
+-- ------------------------------------------------
+if ParentGui:FindFirstChild("KranCustomMainGui") then ParentGui.KranCustomMainGui:Destroy() end
+
+local MainScreenGui = Instance.new("ScreenGui")
+MainScreenGui.Name = "KranCustomMainGui"
+MainScreenGui.Parent = ParentGui
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.fromOffset(580, 380)
+MainFrame.Position = UDim2.new(0.5, -290, 0.5, -190)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = MainScreenGui
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 14)
+MainCorner.Parent = MainFrame
+
+-- ✨ แก้ไขขอบ UIStroke + UIGradient สายรุ้งเรืองแสง
+local OuterGlowStroke = Instance.new("UIStroke")
+OuterGlowStroke.Name = "KranOuterGlowStroke"
+OuterGlowStroke.Thickness = 4
+OuterGlowStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+OuterGlowStroke.LineJoinMode = Enum.LineJoinMode.Round
+OuterGlowStroke.Parent = MainFrame
+
+local RGBGradient = Instance.new("UIGradient")
+RGBGradient.Name = "RainbowGradient"
+RGBGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+    ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255, 165, 0)),
+    ColorSequenceKeypoint.new(0.4, Color3.fromRGB(0, 255, 0)),
+    ColorSequenceKeypoint.new(0.6, Color3.fromRGB(0, 230, 255)),
+    ColorSequenceKeypoint.new(0.8, Color3.fromRGB(130, 0, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
+})
+RGBGradient.Parent = OuterGlowStroke
+
+-- Top Header
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 42)
+Header.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
+Header.BorderSizePixel = 0
+Header.Parent = MainFrame
+
+local HeaderCorner = Instance.new("UICorner")
+HeaderCorner.CornerRadius = UDim.new(0, 14)
+HeaderCorner.Parent = Header
+
+local TitleText = Instance.new("TextLabel")
+TitleText.Size = UDim2.new(0.5, 0, 1, 0)
+TitleText.Position = UDim2.new(0, 15, 0, 0)
+TitleText.Text = "👑 ALL MENU BY KRAN | VIP EDITION"
+TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleText.TextSize = 13
+TitleText.Font = Enum.Font.FredokaOne
+TitleText.TextXAlignment = Enum.TextXAlignment.Left
+TitleText.BackgroundTransparency = 1
+TitleText.Parent = Header
+
+-- 🔍 Search Bar
+local TopSearchBox = Instance.new("TextBox")
+TopSearchBox.Name = "KranTopSearchBar"
+TopSearchBox.Size = UDim2.new(0, 180, 0, 26)
+TopSearchBox.Position = UDim2.new(1, -195, 0, 8)
+TopSearchBox.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
+TopSearchBox.Text = ""
+TopSearchBox.PlaceholderText = "🔍 พิมพ์ค้นหาที่นี่..."
+TopSearchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 170)
+TopSearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+TopSearchBox.TextSize = 11
+TopSearchBox.Font = Enum.Font.SourceSansBold
+TopSearchBox.ClearTextOnFocus = false
+TopSearchBox.Parent = Header
+
+local TopSearchCorner = Instance.new("UICorner")
+TopSearchCorner.CornerRadius = UDim.new(0, 8)
+TopSearchCorner.Parent = TopSearchBox
+
+local TopSearchStroke = Instance.new("UIStroke")
+TopSearchStroke.Thickness = 1.5
+TopSearchStroke.Color = Color3.fromRGB(0, 200, 255)
+TopSearchStroke.Parent = TopSearchBox
+
+-- Sidebar & Content
+local Sidebar = Instance.new("Frame")
+Sidebar.Size = UDim2.new(0, 150, 1, -42)
+Sidebar.Position = UDim2.new(0, 0, 0, 42)
+Sidebar.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
+Sidebar.BorderSizePixel = 0
+Sidebar.Parent = MainFrame
+
+local ContentContainer = Instance.new("Frame")
+ContentContainer.Size = UDim2.new(1, -150, 1, -42)
+ContentContainer.Position = UDim2.new(0, 150, 0, 42)
+ContentContainer.BackgroundTransparency = 1
+ContentContainer.Parent = MainFrame
+
+ToggleBtn.MouseButton1Click:Connect(function()
+    MainScreenGui.Enabled = not MainScreenGui.Enabled
+end)
+
+-- ------------------------------------------------
+-- 📑 ระบบสลับแท็บ และปุ่มภายใน
+-- ------------------------------------------------
+local Tabs = {}
+local TabButtons = {}
+local RegisteredButtons = {}
+
+local TabListLayout = Instance.new("UIListLayout")
+TabListLayout.Parent = Sidebar
+TabListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+TabListLayout.Padding = UDim.new(0, 4)
+
+local function CreateTab(name, iconText)
+    local TabScroll = Instance.new("ScrollingFrame")
+    TabScroll.Size = UDim2.new(1, -20, 1, -20)
+    TabScroll.Position = UDim2.new(0, 10, 0, 10)
+    TabScroll.BackgroundTransparency = 1
+    TabScroll.ScrollBarThickness = 4
+    TabScroll.Visible = false
+    TabScroll.Parent = ContentContainer
+
+    local ScrollLayout = Instance.new("UIListLayout")
+    ScrollLayout.Parent = TabScroll
+    ScrollLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    ScrollLayout.Padding = UDim.new(0, 8)
+
+    ScrollLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        TabScroll.CanvasSize = UDim2.new(0, 0, 0, ScrollLayout.AbsoluteContentSize.Y + 15)
+    end)
+
+    local TabBtn = Instance.new("TextButton")
+    TabBtn.Size = UDim2.new(1, -10, 0, 36)
+    TabBtn.Position = UDim2.new(0, 5, 0, 0)
+    TabBtn.BackgroundColor3 = Color3.fromRGB(24, 24, 32)
+    TabBtn.Text = "  " .. iconText .. " " .. name
+    TabBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
+    TabBtn.TextSize = 12
+    TabBtn.Font = Enum.Font.SourceSansBold
+    TabBtn.TextXAlignment = Enum.TextXAlignment.Left
+    TabBtn.Parent = Sidebar
+
+    local TabBtnCorner = Instance.new("UICorner")
+    TabBtnCorner.CornerRadius = UDim.new(0, 6)
+    TabBtnCorner.Parent = TabBtn
+
+    TabBtn.MouseButton1Click:Connect(function()
+        for _, tScroll in pairs(Tabs) do tScroll.Visible = false end
+        for _, tBtn in pairs(TabButtons) do
+            tBtn.BackgroundColor3 = Color3.fromRGB(24, 24, 32)
+            tBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
+        end
+        TabScroll.Visible = true
+        TabBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 220)
+        TabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end)
+
+    table.insert(Tabs, TabScroll)
+    table.insert(TabButtons, TabBtn)
+
+    return TabScroll
+end
+
+local function AddSection(TabScroll, title)
+    local SecLabel = Instance.new("TextLabel")
+    SecLabel.Size = UDim2.new(1, 0, 0, 24)
+    SecLabel.Text = title
+    SecLabel.TextColor3 = Color3.fromRGB(0, 220, 255)
+    SecLabel.TextSize = 12
+    SecLabel.Font = Enum.Font.FredokaOne
+    SecLabel.TextXAlignment = Enum.TextXAlignment.Left
+    SecLabel.BackgroundTransparency = 1
+    SecLabel.Parent = TabScroll
+end
+
+local function AddButton(TabScroll, config)
+    local BtnFrame = Instance.new("Frame")
+    BtnFrame.Size = UDim2.new(1, -10, 0, 48)
+    BtnFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    BtnFrame.Parent = TabScroll
+
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 8)
+    BtnCorner.Parent = BtnFrame
+
+    local TitleLabel = Instance.new("TextLabel")
+    TitleLabel.Size = UDim2.new(1, -10, 0, 22)
+    TitleLabel.Position = UDim2.new(0, 10, 0, 4)
+    TitleLabel.Text = config.Title
+    TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TitleLabel.TextSize = 12
+    TitleLabel.Font = Enum.Font.SourceSansBold
+    TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.Parent = BtnFrame
+
+    local DescLabel = Instance.new("TextLabel")
+    DescLabel.Size = UDim2.new(1, -10, 0, 18)
+    DescLabel.Position = UDim2.new(0, 10, 0, 24)
+    DescLabel.Text = config.Description or ""
+    DescLabel.TextColor3 = Color3.fromRGB(150, 150, 160)
+    DescLabel.TextSize = 10
+    DescLabel.Font = Enum.Font.SourceSans
+    DescLabel.TextXAlignment = Enum.TextXAlignment.Left
+    DescLabel.BackgroundTransparency = 1
+    DescLabel.Parent = BtnFrame
+
+    local ClickBtn = Instance.new("TextButton")
+    ClickBtn.Size = UDim2.new(1, 0, 1, 0)
+    ClickBtn.BackgroundTransparency = 1
+    ClickBtn.Text = ""
+    ClickBtn.Parent = BtnFrame
+
+    ClickBtn.MouseButton1Click:Connect(function()
+        local FlashFrame = Instance.new("Frame")
+        FlashFrame.Size = UDim2.new(1, 0, 1, 0)
+        FlashFrame.BackgroundColor3 = Color3.fromRGB(0, 230, 255)
+        FlashFrame.BackgroundTransparency = 0.8
+        FlashFrame.BorderSizePixel = 0
+        FlashFrame.Parent = BtnFrame
+        
+        local FlashCorner = Instance.new("UICorner")
+        FlashCorner.CornerRadius = UDim.new(0, 8)
+        FlashCorner.Parent = FlashFrame
+
+        TweenService:Create(FlashFrame, TweenInfo.new(0.35), {BackgroundTransparency = 1}):Play()
+        task.delay(0.4, function() FlashFrame:Destroy() end)
+
+        if config.Callback then config.Callback() end
+    end)
+
+    table.insert(RegisteredButtons, {
+        Frame = BtnFrame,
+        SearchText = string.lower(config.Title .. " " .. (config.Description or ""))
+    })
+end
+
+local function AddToggle(TabScroll, title, default, callback)
+    local state = default or false
+
+    local ToggleFrame = Instance.new("Frame")
+    ToggleFrame.Size = UDim2.new(1, -10, 0, 38)
+    ToggleFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    ToggleFrame.Parent = TabScroll
+
+    local ToggleCorner = Instance.new("UICorner")
+    ToggleCorner.CornerRadius = UDim.new(0, 8)
+    ToggleCorner.Parent = ToggleFrame
+
+    local Label = Instance.new("TextLabel")
+    Label.Size = UDim2.new(0.7, 0, 1, 0)
+    Label.Position = UDim2.new(0, 10, 0, 0)
+    Label.Text = title
+    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Label.TextSize = 12
+    Label.Font = Enum.Font.SourceSansBold
+    Label.TextXAlignment = Enum.TextXAlignment.Left
+    Label.BackgroundTransparency = 1
+    Label.Parent = ToggleFrame
+
+    local StatusBtn = Instance.new("TextButton")
+    StatusBtn.Size = UDim2.new(0, 70, 0, 24)
+    StatusBtn.Position = UDim2.new(1, -80, 0.5, -12)
+    StatusBtn.BackgroundColor3 = state and Color3.fromRGB(0, 200, 100) or Color3.fromRGB(180, 40, 40)
+    StatusBtn.Text = state and "ON 🟢" or "OFF 🔴"
+    StatusBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    StatusBtn.TextSize = 11
+    StatusBtn.Font = Enum.Font.SourceSansBold
+    StatusBtn.Parent = ToggleFrame
+
+    local StatusCorner = Instance.new("UICorner")
+    StatusCorner.CornerRadius = UDim.new(0, 6)
+    StatusCorner.Parent = StatusBtn
+
+    StatusBtn.MouseButton1Click:Connect(function()
