@@ -1,0 +1,291 @@
+-- 📌 แท็บ 7: ตั้งค่าระบบ
+Tabs.Settings:Section({ Title = "🔑 ระบบ Key" })
+
+Tabs.Settings:Button({
+    Title = "📋 คัดลอกลิ้งค์รับคีย์ (Get Key Link)",
+    Desc = "คัดลอกลิ้งค์รับคีย์ลง ClipBoard",
+    Callback = function()
+        setclipboard(KEY_LINK)
+        WindUI:Notify({
+            Title = "🔑 Get Key Link",
+            Content = "คัดลอกลิ้งค์รับคีย์เรียบร้อยแล้ว!",
+            Duration = 2
+        })
+    end
+})
+
+Tabs.Settings:Section({ Title = "🤪 สายเรื้อน (Troll & Annoying)" })
+
+Tabs.Settings:Button({
+    Title = "👻 UFGUI (สคริปต์ Fling ชนปลิว)",
+    Desc = "เปิดใช้งานสคริปต์ Fling ชนผู้เล่นคนอื่นปลิว",
+    Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/sypcerr/scripts/refs/heads/main/UFGUI", true))() end
+})
+
+Tabs.Settings:Button({
+    Title = "🥵 Kei Hot Special Script",
+    Desc = "รันสคริปต์พิเศษ Kei Hot",
+    Callback = function() loadstring(game:HttpGet("https://kei-scripts.vercel.app/raw/6bed0a68-5ac7-4025-a269-422087fa024f"))() end
+})
+
+Tabs.Settings:Section({ Title = "💀 คำสั่งด่วน (Quick Actions)" })
+
+Tabs.Settings:Button({
+    Title = "💀 รีเซ็ทตัวละคร (Reset Character)",
+    Desc = "กดเพื่อฆ่าตัวละครตายแล้วเกิดใหม่ทันที",
+    Callback = function()
+        pcall(function()
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+                LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Health = 0
+            end
+        end)
+    end
+})
+
+Tabs.Settings:Section({ Title = "⚙️ ระบบป้องกัน & เซิร์ฟเวอร์" })
+
+local AntiAfkEnabled = false
+Tabs.Settings:Toggle({
+    Title = "1. เปิดระบบ Anti-AFK (กันโดนเตะ)",
+    Value = false,
+    Callback = function(Value) AntiAfkEnabled = Value end
+})
+
+LocalPlayer.Idled:Connect(function()
+    if AntiAfkEnabled then
+        game:GetService("VirtualUser"):CaptureController()
+        game:GetService("VirtualUser"):ClickButton2(Vector2.new())
+    end
+end)
+
+Tabs.Settings:Button({
+    Title = "2. เข้าเซิร์ฟเดิมใหม่ (Rejoin)",
+    Callback = function() game:GetService("TeleportService"):Teleport(game.PlaceId, LocalPlayer) end
+})
+
+Tabs.Settings:Button({
+    Title = "3. ปิดสคริปต์ทั้งหมด (Destroy)",
+    Callback = function()
+        GodModeEnabled = false
+        if ToggleGui then ToggleGui:Destroy() end
+        if SoundService:FindFirstChild("KranClickSound") then SoundService.KranClickSound:Destroy() end
+        for plr, _ in pairs(ESP_Objects) do
+            if ESP_Objects[plr] then
+                for _, obj in pairs(ESP_Objects[plr]) do obj:Remove() end
+            end
+        end
+        pcall(function() Window:Destroy() end)
+    end
+})
+
+-- 🎨 ตั้งค่าระบบไฟ & ขอบเรืองแสง RGB บนเมนูหลัก
+Tabs.Settings:Section({ Title = "🎨 ตั้งค่าระบบไฟ & ขอบเรืองแสงเมนูหลัก" })
+
+Tabs.Settings:Button({
+    Title = "🎨 เปลี่ยนโหมดสี: 🌈 Rainbow (สีรุ้งวิ่งวนไปเรื่อยๆ)",
+    Desc = "แสดงแถบสีรุ้งหมุนวิ่งวน 360 องศารอบขอบหน้าต่างเมนูหลัก",
+    Callback = function() RGB_Config.Mode = "Rainbow" end
+})
+
+Tabs.Settings:Button({
+    Title = "🟠 เปลี่ยนโหมดสี: Orange (สีส้มสด)",
+    Callback = function() RGB_Config.Mode = "Orange" end
+})
+
+Tabs.Settings:Button({
+    Title = "🟢 เปลี่ยนโหมดสี: Neon Green (เขียวนีออน)",
+    Callback = function() RGB_Config.Mode = "Green" end
+})
+
+Tabs.Settings:Button({
+    Title = "🔵 เปลี่ยนโหมดสี: Cyan (ฟ้าไซแอน)",
+    Callback = function() RGB_Config.Mode = "Cyan" end
+})
+
+Tabs.Settings:Button({
+    Title = "🔴 เปลี่ยนโหมดสี: Red (แดงสด)",
+    Callback = function() RGB_Config.Mode = "Red" end
+})
+
+Tabs.Settings:Button({
+    Title = "💜 เปลี่ยนโหมดสี: Neon Purple (ม่วงนีออน)",
+    Callback = function() RGB_Config.Mode = "Purple" end
+})
+
+Tabs.Settings:Button({
+    Title = "💛 เปลี่ยนโหมดสี: Golden Yellow (ทองคำสว่าง VIP)",
+    Callback = function() RGB_Config.Mode = "Gold" end
+})
+
+Tabs.Settings:Button({
+    Title = "🩷 เปลี่ยนโหมดสี: Neon Pink (ชมพูนีออน)",
+    Callback = function() RGB_Config.Mode = "Pink" end
+})
+
+Tabs.Settings:Button({
+    Title = "❄️ เปลี่ยนโหมดสี: Ice Blue (ฟ้าไอซ์บลู)",
+    Callback = function() RGB_Config.Mode = "IceBlue" end
+})
+
+Tabs.Settings:Button({
+    Title = "⚪ เปลี่ยนโหมดสี: Silver White (ขาวเงินสว่างสด)",
+    Callback = function() RGB_Config.Mode = "White" end
+})
+
+Tabs.Settings:Button({
+    Title = "⚡ ปรับความเร็วไฟวิ่งขอบเมนู: (ช้า ➔ ปกติ ➔ เร็ว)",
+    Callback = function()
+        if RGB_Config.Speed == 8 then
+            RGB_Config.Speed = 3
+        elseif RGB_Config.Speed == 3 then
+            RGB_Config.Speed = 5
+        else
+            RGB_Config.Speed = 8
+        end
+    end
+})
+
+Tabs.Settings:Button({
+    Title = "📐 ปรับความหนาขอบไฟเมนู: (บาง ➔ ปกติ ➔ หนา)",
+    Callback = function()
+        if RGB_Config.Size == 3 then
+            RGB_Config.Size = 5
+        elseif RGB_Config.Size == 5 then
+            RGB_Config.Size = 2
+        else
+            RGB_Config.Size = 3
+        end
+        
+        for _, gui in pairs(ParentGui:GetChildren()) do
+            if gui:IsA("ScreenGui") then
+                for _, descendant in pairs(gui:GetDescendants()) do
+                    if descendant:IsA("Frame") and descendant.AbsoluteSize.X > 250 then
+                        local stroke = descendant:FindFirstChild("KranMainStroke")
+                        if stroke then stroke.Thickness = RGB_Config.Size end
+                    end
+                end
+            end
+        end
+    end
+})
+
+-- ------------------------------------------------
+-- ⚡ 7. RenderStepped Loop หมุน Gradient สีรุ้งวนรอบเมนูหลัก 360°
+-- ------------------------------------------------
+RunService.RenderStepped:Connect(function()
+    local offset = (tick() * (RGB_Config.Speed * 0.15)) % 1
+    local rotAngle = (tick() * (RGB_Config.Speed * 45)) % 360
+
+    -- หมุนไฟขอบเรืองแสงบนหน้าต่างเมนูหลัก WindUI
+    for _, gui in pairs(ParentGui:GetChildren()) do
+        if gui:IsA("ScreenGui") and (gui.Name:find("WindUI") or gui.Name:find("Wind") or gui:FindFirstChild("Main") or gui:FindFirstChild("Canvas")) then
+            for _, descendant in pairs(gui:GetDescendants()) do
+                if descendant:IsA("Frame") and descendant.AbsoluteSize.X > 250 then
+                    local stroke = descendant:FindFirstChild("KranMainStroke")
+                    if stroke then
+                        local grad = stroke:FindFirstChild("KranMainGradient")
+                        if grad then
+                            grad.Rotation = rotAngle
+                            UpdateGradientColors(grad, offset)
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
+
+-- ------------------------------------------------
+-- ⚙️ 8. ระบบคำนวณ ESP
+-- ------------------------------------------------
+local function CreateESPForPlayer(plr)
+    if not Drawing then return end
+    local objects = {
+        Box = Drawing.new("Square"),
+        BoxOutline = Drawing.new("Square"),
+        Tracer = Drawing.new("Line")
+    }
+    objects.Box.Color = Color3.fromRGB(255, 50, 50)
+    objects.Box.Thickness = 1.5
+    objects.BoxOutline.Color = Color3.fromRGB(0, 0, 0)
+    objects.BoxOutline.Thickness = 3
+    objects.Tracer.Thickness = 1.5
+    ESP_Objects[plr] = objects
+end
+
+local function RemoveESPForPlayer(plr)
+    if ESP_Objects[plr] then
+        for _, obj in pairs(ESP_Objects[plr]) do obj:Remove() end
+        ESP_Objects[plr] = nil
+    end
+end
+
+local function UpdateESP(plr)
+    if not Drawing then return end
+    if not ESP_Objects[plr] then CreateESPForPlayer(plr) end
+
+    local objs = ESP_Objects[plr]
+    local char = plr.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    local head = char and char:FindFirstChild("Head")
+    local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+
+    if char and hrp and head and humanoid and humanoid.Health > 0 then
+        local headWorldPos = head.Position + Vector3.new(0, 1.2, 0)
+        local legWorldPos = hrp.Position - Vector3.new(0, 3.2, 0)
+
+        local headScreen, headOnScreen = Camera:WorldToViewportPoint(headWorldPos)
+        local legScreen, legOnScreen = Camera:WorldToViewportPoint(legWorldPos)
+
+        if headOnScreen or legOnScreen then
+            local boxHeight = math.abs(headScreen.Y - legScreen.Y)
+            local boxWidth = boxHeight / 1.6
+            local boxPos = Vector2.new(headScreen.X - boxWidth / 2, headScreen.Y)
+
+            if Box_Enabled then
+                objs.BoxOutline.Position = boxPos
+                objs.BoxOutline.Size = Vector2.new(boxWidth, boxHeight)
+                objs.BoxOutline.Visible = true
+
+                objs.Box.Position = boxPos
+                objs.Box.Size = Vector2.new(boxWidth, boxHeight)
+                objs.Box.Visible = true
+            else
+                objs.Box.Visible = false
+                objs.BoxOutline.Visible = false
+            end
+
+            if Tracers_Enabled then
+                objs.Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+                objs.Tracer.To = Vector2.new(headScreen.X, legScreen.Y)
+                objs.Tracer.Color = Color3.fromHSV((tick() * 0.5) % 1, 0.9, 1)
+                objs.Tracer.Visible = true
+            else
+                objs.Tracer.Visible = false
+            end
+            return
+        end
+    end
+
+    objs.Box.Visible = false
+    objs.BoxOutline.Visible = false
+    objs.Tracer.Visible = false
+end
+
+Players.PlayerRemoving:Connect(RemoveESPForPlayer)
+
+RunService.RenderStepped:Connect(function()
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer then
+            UpdateESP(v)
+        end
+    end
+end)
+
+pcall(function()
+    WindUI:Notify({
+        Title = "♣️ ALL MENU BY KRAN",
+        Content = "โหลดเมนูกรอบสีรุ้งวิ่งวน (Rainbow Menu Border) เรียบร้อยแล้ว! 🌈✨",
+        Duration = 3
+    })
+end)
